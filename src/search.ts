@@ -3,16 +3,18 @@ import * as path from 'path';
 
 import { Request, Response, NextFunction } from 'express';
 
-import * as config from './config';
+import * as config from './config.js';
 
 const CHUNK_SIZE = config.chunkSize;
-const EOL = 0x0a;
 
 /**
  * An async generator that yields lines from a file in reverse order.
  * This function assumes the file exists and is readable.
  */
-async function* readLinesBackwards(file: fs.FileHandle, fileSize: number) {
+export async function* readLinesBackwards(
+  file: fs.FileHandle,
+  fileSize: number
+) {
   let position = fileSize;
   const buffer = Buffer.alloc(CHUNK_SIZE);
 
@@ -33,9 +35,12 @@ async function* readLinesBackwards(file: fs.FileHandle, fileSize: number) {
     }
 
     if (position == 0) {
-      yield parts;
+      yield parts.reverse();
     } else {
-      yield parts.slice(1);
+      tail = parts[0];
+      if (parts.length > 1) {
+        yield parts.slice(1).reverse();
+      }
     }
   }
 }
@@ -70,35 +75,65 @@ export async function searchFile(
   let stat = null;
   try {
     stat = await fs.stat(filePath);
-  } catch (err: any) {
-    if (err.code === 'ENOENT') {
+
+    if (stat.isDirectory()) {
+      res.status(400).send('File is a directory');
+      return;
+    }
+  } catch (ex: any) {
+    if (ex.code === 'ENOENT') {
+      console.error(ex);
       res.status(404).send('File not found');
+    } else if (ex.code === 'EACCES') {
+      res.status(403).send('File not accessible');
     } else {
-      next(err);
+      next(ex);
     }
     return;
   }
 
-  try {
-    const { size } = stat;
-    const file = await fs.open(filePath, 'r');
+  let f: fs.FileHandle;
+  const { size } = stat;
 
-    let count = 0;
-    for await (const lines of readLinesBackwards(file, size)) {
-      for (const line of lines) {
+  try {
+    f = await fs.open(filePath, 'r');
+  } catch (ex: any) {
+    if (ex.code === 'EACCES') {
+      return res.status(403).send('File not accessible');
+    }
+
+    return next(ex);
+  }
+
+  res.setHeader('Content-Type', 'text/plain');
+
+  let count = 0;
+  let limitReached = false;
+
+  try {
+    for await (const lines of readLinesBackwards(f, size)) {
+      for (let i = 0; i < lines.length && !limitReached; i++) {
+        const line = lines[i];
         if (!term || line.includes(term)) {
           res.write(line + '\n');
           count++;
         }
-    
+
         if (limit && count >= limit) {
-          res.end();
-          break;
+          limitReached = true;
         }
       }
+
+      if (limitReached) {
+        break;
+      }
     }
-    await file.close();
+
+    await f.close();
+    res.end();
   } catch (err) {
-    next(err);
+    // don't call next() here, because we've already sent a response
+    console.error(err);
+    res.end('\n\nAn error occurred while reading the file.\n');
   }
 }
