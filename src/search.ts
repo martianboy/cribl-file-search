@@ -32,12 +32,10 @@ async function* readLinesBackwards(file: fs.FileHandle, fileSize: number) {
       tail = '';
     }
 
-    for (let i = parts.length - 1; i >= 0; i--) {
-      if (i == 0 && position > 0) {
-        tail = parts[0];
-      } else {
-        yield parts[i];
-      }
+    if (position == 0) {
+      yield parts;
+    } else {
+      yield parts.slice(1);
     }
   }
 }
@@ -86,18 +84,19 @@ export async function searchFile(
     const file = await fs.open(filePath, 'r');
 
     let count = 0;
-    for await (const line of readLinesBackwards(file, size)) {
-      if (!term || line.includes(term)) {
-        res.write(line + '\n');
-        count++;
-      }
-
-      if (limit && count >= limit) {
-        res.end();
-        break;
+    for await (const lines of readLinesBackwards(file, size)) {
+      for (const line of lines) {
+        if (!term || line.includes(term)) {
+          res.write(line + '\n');
+          count++;
+        }
+    
+        if (limit && count >= limit) {
+          res.end();
+          break;
+        }
       }
     }
-
     await file.close();
   } catch (err) {
     next(err);
