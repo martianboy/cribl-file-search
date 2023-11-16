@@ -119,7 +119,7 @@ export async function searchFile(
           count++;
         }
 
-        if (limit && count >= limit) {
+        if (limit && count >= limit || req.closed) {
           limitReached = true;
         }
       }

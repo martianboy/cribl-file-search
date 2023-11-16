@@ -13,11 +13,41 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send('Something broke!');
 });
 
-/* istanbul ignore if -- @preserve */
 if (import.meta.url === `file://${process.argv[1]}`) {
-  app.listen(config.port, () => {
+  const server = app.listen(config.port, () => {
     console.log(`Agent server listening on port ${config.port}`);
   });
+
+  let shutdownTimer: NodeJS.Timeout | null = null;
+  let forceShutdownFlag = false;
+
+  function forceShutdown() {
+    console.log('Force shutdown!');
+    if (shutdownTimer) {
+      clearTimeout(shutdownTimer);
+    }
+    server.closeAllConnections();
+  }
+
+  function shutdown() {
+    // If we've already received a shutdown signal, then force shutdown.
+    if (forceShutdownFlag) {
+      forceShutdown();
+    } else {
+      forceShutdownFlag = true;
+    }
+
+    // Don't accept new connections
+    server.close();
+
+    // Close any idle connections with keep-alive
+    server.closeIdleConnections();
+
+    // Allow 5 seconds for active connections to close.
+    shutdownTimer = setTimeout(forceShutdown, 5000);
+  }
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 }
 
 export default app;
