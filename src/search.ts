@@ -20,32 +20,24 @@ async function* readLinesBackwards(file: fs.FileHandle, fileSize: number) {
   let tail = '';
 
   while (position > 0) {
-    position = Math.max(0, position - CHUNK_SIZE);
+    const readSize = Math.min(CHUNK_SIZE, position);
+    position -= readSize;
+    await file.read(buffer, 0, readSize, position);
 
-    const { bytesRead } = await file.read({
-      buffer,
-      offset: 0,
-      length: CHUNK_SIZE,
-      position,
-    });
+    let chunk = buffer.toString('utf-8', 0, readSize);
+    let parts = chunk.split('\n');
 
-    for (let i = bytesRead; i >= 0; ) {
-      let j = buffer.lastIndexOf(EOL, i - 1);
-      if (j >= 0 || position === 0) {
-        // If position is 0, we are at the beginning of the file. In this case,
-        // we should yield the first line of the file even if it doesn't include
-        // another newline character.
-        let line = buffer.toString('utf8', j + 1, i);
-        if (tail.length > 0) {
-          line += tail;
-          tail = '';
-        }
-        yield line;
+    if (tail.length > 0) {
+      parts[parts.length - 1] += tail;
+      tail = '';
+    }
+
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (i == 0 && position > 0) {
+        tail = parts[0];
       } else {
-        tail = buffer.toString('utf8', 0, i) + tail;
+        yield parts[i];
       }
-
-      i = j;
     }
   }
 }
