@@ -36,7 +36,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   let forceShutdownFlag = false;
 
   function forceShutdown() {
-    console.log('Force shutdown!');
     if (shutdownTimer) {
       clearTimeout(shutdownTimer);
     }
@@ -46,8 +45,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   function shutdown() {
     // If we've already received a shutdown signal, then force shutdown.
     if (forceShutdownFlag) {
-      forceShutdown();
+      console.log('Force shutdown!');
+      return forceShutdown();
     } else {
+      console.log('Press Ctrl+C again to force shutdown.');
       forceShutdownFlag = true;
     }
 
