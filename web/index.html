@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Search WebApp</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <pre id="results"></pre>
+
+      <div id="search-form">
+        <form>
+          <div class="popover-box" id="servers-popover">
+            <button class="dropdown-button popover-button" type="button">
+              All Servers
+            </button>
+
+            <div class="popover-container">
+              <div class="popover-content">
+                <ul id="servers">
+                  <li><a data-value="all">All servers</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="popover-box" id="file-popover">
+            <button id="options" class="popover-button" type="button">
+              &hellip;
+            </button>
+            <div class="popover-container">
+              <div class="popover-content">
+                <label for="file" class="required">File Path</label>
+                <input type="text" id="file" name="file" required />
+
+                <label for="limit">Limit</label>
+                <input type="text" id="limit" name="limit" />
+
+                <div class="popover-actions">
+                  <button class="button popover-close" type="button">Ok</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <input type="search" id="term" name="term" autocomplete="off" />
+          <!-- <div class="separator"></div> -->
+          <button class="button" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
