@@ -1,5 +1,5 @@
 {
-  "name": "cribl-takehome",
+  "name": "cribl-file-search",
   "version": "1.0.0",
   "description": "An HTTP agent that helps reading log files",
   "main": "build/index.js",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/martianboy/cribl-takehome-agent.git"
+    "url": "git+https://github.com/martianboy/cribl-file-search.git"
   },
   "author": "Abbas Mashayekh <martianboy2005@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/martianboy/cribl-takehome-agent/issues"
+    "url": "https://github.com/martianboy/cribl-file-search/issues"
   },
-  "homepage": "https://github.com/martianboy/cribl-takehome-agent#readme",
+  "homepage": "https://github.com/martianboy/cribl-file-search#readme",
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.9.0",
