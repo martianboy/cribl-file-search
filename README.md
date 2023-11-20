@@ -67,6 +67,8 @@ docker run --name cribl-file-search -p 3000:3000 -v "$(pwd)/data:/data" cribl-fi
 open http://localhost:3000
 ```
 
+If you wish to run multiple instances on a single host for testing purposes, an example Docker Compose file is provided as well.
+
 ### Environment Variables
 
 The application can be configured using the following environment variables:

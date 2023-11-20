@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  alpine:
+    environment:
+      - HOSTNAME=alpine
+      - REDIS_URL=redis://redis:6379
+    build: .
+    depends_on:
+      - redis
+    expose:
+      - 3000
+    volumes:
+      - ./data/alpine:/data
+  boer:
+    environment:
+      - HOSTNAME=boer
+      - REDIS_URL=redis://redis:6379
+    build: .
+    depends_on:
+      - redis
+    expose:
+      - 3000
+    volumes:
+      - ./data/boer:/data
+  bagot:
+    build: .
+    depends_on:
+      - redis
+    expose:
+      - 3000
+    environment:
+      - HOSTNAME=bagot
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./data/bagot:/data
+    ports:
+      - 3000:3000
+  redis:
+    image: redis:latest
