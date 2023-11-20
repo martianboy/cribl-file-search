@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/build/index.js",
+      "program": "${workspaceFolder}/build/server.js",
       "outFiles": ["${workspaceFolder}/**/*.js"],
       "sourceMaps": true,
       "env": {
@@ -28,6 +28,7 @@
       "console": "integratedTerminal",
       "env": {
         "BASE_DIR": "${workspaceFolder}/data",
+        "REDIS_URL": "redis://localhost:6379",
         "CHUNK_SIZE": "8"
       }
     }

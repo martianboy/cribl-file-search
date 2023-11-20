@@ -3,7 +3,7 @@ import path from 'path';
 import { describe, expect, it } from 'vitest';
 
 import * as config from '../src/config.js';
-import { readLinesBackwards } from '../src/search.js';
+import { readLinesBackwards } from '../src/routes.js';
 
 describe('readLinesBackwards()', () => {
   async function prepareFile(contents: string) {

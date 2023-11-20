@@ -1,11 +1,23 @@
+import path from 'path';
 import express, { Request, Response, NextFunction } from 'express';
 
 import * as config from './config.js';
-import { searchFile } from './search.js';
+import {
+  listServers,
+  searchAllServers,
+  searchFile,
+  searchServer,
+} from './routes.js';
+import { heartbeat } from './registry.js';
 
 const app = express();
 
 app.get('/search', searchFile);
+app.get('/search-all', searchAllServers);
+app.get('/search-server', searchServer);
+app.get('/servers', listServers);
+
+app.use(express.static(path.resolve(process.cwd(), 'web')));
 
 // Error handler
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -19,6 +31,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 
   let shutdownTimer: NodeJS.Timeout | null = null;
+  let heartbeatTimer: NodeJS.Timeout | null = null;
+
   let forceShutdownFlag = false;
 
   function forceShutdown() {
@@ -37,6 +51,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       forceShutdownFlag = true;
     }
 
+    // Stop the heartbeat timer
+    if (heartbeatTimer) {
+      clearTimeout(heartbeatTimer);
+    }
+
     // Don't accept new connections
     server.close();
 
@@ -46,6 +65,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     // Allow 5 seconds for active connections to close.
     shutdownTimer = setTimeout(forceShutdown, 5000);
   }
+
+  // Start the heartbeat timer
+  function scheduleHeartbeat() {
+    heartbeatTimer = setTimeout(() => {
+      heartbeat().then(scheduleHeartbeat);
+    }, 30 * 1000);
+  }
+
+  console.log('Starting heartbeat...');
+  heartbeat().then(scheduleHeartbeat);
+
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 }

@@ -4,7 +4,7 @@ import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 
 import * as config from '../src/config.js';
-import app from '../src/agent.js';
+import app from '../src/server.js';
 
 /* istanbul ignore if -- @preserve */
 describe('/search', () => {
