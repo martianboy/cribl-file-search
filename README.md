@@ -22,24 +22,33 @@ These instructions will guide you on how to set up and run Cribl File Search on 
 ### Installing and Running Locally
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/martianboy/cribl-file-search
+```bash
+git clone https://github.com/martianboy/cribl-file-search
+```
 2. Navigate to the project directory:
 ```bash
-   cd cribl-file-search
+cd cribl-file-search
 ```
-3. Build the project:
+3. Install the dependencies:
+```bash
+npm i
+```
+4. Build and start the application:
 ```bash
 npm run build
-```
-4. Start the application:
-```bash
 npm start
 ```
 5. Open the application in a web browser:
 ```bash
 open http://localhost:3000
 ```
+
+If you want to run the tests, you can simply run:
+```
+npm test
+```
+
+The tests are executed using vitest.
 
 ### Using Docker
 
@@ -104,6 +113,7 @@ GET /servers
 ### Using the Provided UI
 
 1. Enter the desired file name, excluding the base directory.
-2. Specify a limit for the number of lines to return (optional).
-3. Enter a search term (optional).
-4. Click search.
+2. Select an option from the list of servers.
+3. Specify a limit for the number of lines to return (optional).
+4. Enter a search term (optional).
+5. Click search.
