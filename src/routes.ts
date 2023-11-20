@@ -75,6 +75,11 @@ export async function searchFile(
     return;
   }
 
+  if (limit <= 0) {
+    res.status(400).send('Invalid limit');
+    return;
+  }
+
   const filePath = path.join(config.baseDir, file);
 
   let stat = null;
