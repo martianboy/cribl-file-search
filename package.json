@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node build/index.js",
+    "start": "BASE_DIR=$PWD/data REDIS_URL=redis://localhost:6379 node build/server.js",
     "test": "BASE_DIR=$PWD/data CHUNK_SIZE=8 npx vitest run",
     "test:watch": "BASE_DIR=$PWD/data CHUNK_SIZE=8 npx vitest"
   },
