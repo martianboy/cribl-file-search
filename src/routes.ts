@@ -180,9 +180,8 @@ export async function searchAllServers(
   async function searchInServer(url: string) {
     let response: globalThis.Response;
     try {
-      console.log(`GET ${url}`);
       response = await fetch(url);
-      console.log('Response', response.status);
+      console.log(response.status, 'GET', url);
     } catch (ex) {
       console.error(ex);
       return;
@@ -211,6 +210,7 @@ export async function searchAllServers(
     }
   }
 
+  // Send early headers as this is a forgiving endpoint.
   res.setHeader('Content-Type', 'text/plain');
   res.status(200);
 
@@ -253,6 +253,7 @@ export async function searchServer(
     return next(ex);
   }
 
+  // Copy headers from the response to the outgoing response.
   response.headers.forEach((value, name) => {
     res.setHeader(name, value);
   });
