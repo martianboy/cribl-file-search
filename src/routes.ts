@@ -52,7 +52,6 @@ interface SearchParams {
   file?: string;
   limit?: string;
   term?: string;
-  prependHostname?: string;
 }
 
 /**
@@ -61,10 +60,10 @@ interface SearchParams {
  * lines from the file that contain the search term.
  *
  * If the file does not exist or is not readable, this function will return a
- * 404 error.
+ * 403 or 404 error.
  */
 export async function searchFile(
-  req: Request<{}, {}, {}, SearchParams>,
+  req: Request<{}, {}, {}, SearchParams & { prependHostname?: string; }>,
   res: Response,
   next: NextFunction
 ) {
