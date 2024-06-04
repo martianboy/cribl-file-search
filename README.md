@@ -36,9 +36,13 @@ npm i
 4. Build and start the application:
 ```bash
 npm run build
+```
+5. Put some files in the `data` folder, or set the BASE_DIR environment variable
+   to a place with files you want to search within. Then start the application:
+```bash
 npm start
 ```
-5. Open the application in a web browser:
+6. Open the application in a web browser:
 ```bash
 open http://localhost:3000
 ```
@@ -67,7 +71,14 @@ docker run --name cribl-file-search -p 3000:3000 -v "$(pwd)/data:/data" cribl-fi
 open http://localhost:3000
 ```
 
-If you wish to run multiple instances on a single host for testing purposes, an example Docker Compose file is provided as well.
+### Using docker-compose
+
+To test a multi-server environment, an example docker-compose.yaml has been provided as well. Simply
+adjust environment variables for each server according to your setup and run the containers:
+
+```bash
+docker-compose up
+```
 
 ### Environment Variables
 
