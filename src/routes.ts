@@ -54,6 +54,16 @@ interface SearchParams {
   term?: string;
 }
 
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 /**
  * Route handler for the search endpoint. Takes a file path, a search term, and
  * optionally a limit on the number of results to return. Returns a list of
@@ -107,6 +117,7 @@ export async function searchFile(
 
   try {
     f = await fs.open(filePath, 'r');
+    console.log('Opened file:', filePath, '- size:', formatFileSize(size));
   } catch (ex: any) {
     if (ex.code === 'EACCES') {
       return res.status(403).send('File not accessible');
@@ -149,7 +160,6 @@ export async function searchFile(
       res.setHeader('Content-Length', '0');
     }
 
-    await f.close();
     res.end();
   } catch (err) {
     // don't call next() here, because we've already sent a response
@@ -182,9 +192,10 @@ export async function searchAllServers(
   async function searchInServer(url: string) {
     let response: globalThis.Response;
     try {
-      response = await fetch(url);
+      response = await fetch(url, { signal });
       console.log(response.status, 'GET', url);
     } catch (ex) {
+      console.log('Fetch failed: GET', url);
       console.error(ex);
       return;
     }
@@ -252,6 +263,7 @@ export async function searchServer(
     response = await fetch(url);
     console.log(`${response.status} GET ${url}`);
   } catch (ex) {
+    console.log('Fetch failed: GET', url);
     return next(ex);
   }
 
