@@ -1,3 +1,4 @@
+import { once } from 'events';
 import * as fs from 'fs/promises';
 import * as qs from 'querystring';
 
@@ -136,11 +137,13 @@ export async function searchFile(
       for (let i = 0; i < lines.length && !limitReached; i++) {
         const line = lines[i];
         if (!term || line.includes(term)) {
-          res.write(
+          if (!res.write(
             (prependHostname === 'true' ? '' + config.hostname + ': ' : '') +
               line +
               '\n'
-          );
+          )) {
+            await once(res, 'drain')
+          };
           count++;
         }
 
@@ -208,8 +211,10 @@ export async function searchAllServers(
       try {
         await response.body.pipeTo(
           new WritableStream({
-            write(chunk) {
-              res.write(chunk);
+            async write(chunk) {
+              if (!res.write(chunk)) {
+                await once(res, 'drain');
+              }
             },
           }),
           { signal }
@@ -275,8 +280,10 @@ export async function searchServer(
   if (response.body) {
     await response.body.pipeTo(
       new WritableStream({
-        write(chunk) {
-          res.write(chunk);
+        async write(chunk) {
+          if (!res.write(chunk)) {
+            await once(res, 'drain');
+          }
         },
       })
     );
