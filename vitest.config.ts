@@ -4,6 +4,8 @@ export default defineConfig({
     includeSource: ['src/**/*.ts'],
     coverage: {
       exclude: ['src/config.ts'],
-    }
+    },
+    environment: 'node',
+    globals: true,
   },
 });
