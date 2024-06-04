@@ -155,6 +155,8 @@ export async function searchFile(
     // don't call next() here, because we've already sent a response
     console.error(err);
     res.end('\n\nAn error occurred while reading the file.\n');
+  } finally {
+    await f.close();
   }
 }
 
