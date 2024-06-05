@@ -15,7 +15,7 @@ These instructions will guide you on how to set up and run Cribl File Search on 
 
 ### Prerequisites
 
-- Node.js
+- Node.js 20 LTS
 - Redis
 - Docker (optional)
 
@@ -33,7 +33,7 @@ cd cribl-file-search
 ```bash
 npm i
 ```
-4. Build and start the application:
+4. Build the application:
 ```bash
 npm run build
 ```
